@@ -1,0 +1,8 @@
+digraph G {
+"map" -> "plane"[label="Broadcaster: /static_transform_publisher_map_plane\nAverage rate: 10.195 Hz\nMost recent transform: 1540857118.602 ( -0.058 sec old)\nBuffer length: 4.905 sec\n"];
+"map" -> "kinect2_ir_optical_frame"[label="Broadcaster: /static_transform_publisher_map_kinect\nAverage rate: 10.193 Hz\nMost recent transform: 1540857118.604 ( -0.060 sec old)\nBuffer length: 4.905 sec\n"];
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 1540857118.544"[ shape=plaintext ] ;
+ }->"map";
+}
