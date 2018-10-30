@@ -85,32 +85,19 @@ void track_objects(const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
     }
 
 
-    //-----------------------------------------
+    //----------Plane Segmentation-------------------------------
 
 
     seg.setInputCloud (boost::make_shared<pcl::PointCloud<pcl::PointXYZ>>(filtered_old_v_cloud));
-    seg.segment (*inliers, *coefficients);
+    seg.segment (*inliers, *coefficients); //gets indices of points that are on the plane
 
     if (inliers->indices.size () == 0)
     {
         PCL_ERROR ("Could not estimate a planar model for the given dataset.");
         return;
     }
-//    std::cerr << "Model coefficients: " << coefficients->values[0] << " "
-//              << coefficients->values[1] << " "
-//              << coefficients->values[2] << " "
-//              << coefficients->values[3] << std::endl;
 
-//    std::cerr << "Model inliers: " << inliers->indices.size () << std::endl;
-
-//    pcl::PointCloud<pcl::PointXYZ> plane_cloud;
-//    for(ulong i = 0; i < inliers->indices.size(); ++i)
-//    {
-//        if(inliers->indices.at(i) < filtered_old_v_cloud.points.size() && inliers->indices.at(i) > 0) {
-//            plane_cloud.push_back(filtered_old_v_cloud.points.at(static_cast<ulong>(inliers->indices.at(i))));
-//        }
-//    }
-
+    //--------Extract non planar points------------------
     pcl::ExtractIndices<pcl::PointXYZ> extract;
     pcl::PointIndices::Ptr above_surface_indices(new pcl::PointIndices());
     extract.setInputCloud(boost::make_shared<pcl::PointCloud<pcl::PointXYZ>>(filtered_old_v_cloud));
@@ -118,9 +105,11 @@ void track_objects(const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
     extract.setNegative(true);
     extract.filter(above_surface_indices->indices);
 
+    //-------Put Non Planar points in KD tree-------------
     pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
     tree->setInputCloud (boost::make_shared<pcl::PointCloud<pcl::PointXYZ>>(filtered_old_v_cloud));
 
+    //-------Cluster Points based on euclidean distance---
     std::vector<pcl::PointIndices> cluster_indices;
     pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
     ec.setInputCloud (boost::make_shared<pcl::PointCloud<pcl::PointXYZ>>(filtered_old_v_cloud));
@@ -132,6 +121,8 @@ void track_objects(const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
     ec.extract (cluster_indices);
     pcl::PointCloud<pcl::PointXYZRGB> cluster_cloud;
     std::cout << "Num CLusters: " << cluster_indices.size() << std::endl;
+
+    //------Assign colors to different clusters
     for(ulong i = 0; i < cluster_indices.size(); ++i)
     {
         for(const auto& index: cluster_indices.at(i).indices)
@@ -164,6 +155,7 @@ void track_objects(const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
         }
     }
 
+    //-----------publish clustered point cloud-----------
     pcl::PCLPointCloud2 pub_cloud;
     pcl::toPCLPointCloud2(cluster_cloud, pub_cloud);
 //    pcl::toPCLPointCloud2(plane_cloud, pub_cloud);
