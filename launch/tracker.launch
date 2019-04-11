@@ -1,7 +1,7 @@
 <launch>
-    <!--<include file="$(find kinect2_bridge)/launch/kinect2_bridge.launch"/>-->
-    <node pkg="rosbag" type="play" name="player" output="screen" args="-l /home/aaron/bucket/ros_snips/kinect_ws/src/pcl_test/bags/moving_object_trimmed.bag"/>
-    <!--<node name="pcl_test_node" pkg="pcl_test" type="pcl_test_node"/>-->
+    <include file="$(find kinect2_bridge)/launch/kinect2_bridge.launch"/>
+<!--    <node pkg="rosbag" type="play" name="player" output="screen" args="-l /home/aaron/bucket/ros_snips/kinect_ws/src/pcl_test/bags/moving_object_trimmed.bag"/>-->
+    <node name="pcl_test_node" pkg="pcl_test" type="pcl_test_node"/>
     <node pkg="tf" type="static_transform_publisher" name="static_transform_publisher_map_plane" args="0 0 0 0 0 0 map plane 100" />
-    <node pkg="tf" type="static_transform_publisher" name="static_transform_publisher_map_kinect" args="0 0 0 0 0 0 map kinect2_ir_optical_frame 100" />
+    <node pkg="tf" type="static_transform_publisher" name="static_transform_publisher_map_kinect" args="0 0 1.2 4.712 3.14 0.78 map kinect2_ir_optical_frame 100" />
 </launch>
