@@ -136,7 +136,7 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(${PROJECT_NAME}_node src/pcl_test.cpp src/object_tracker.hpp)
-
+add_executable(crop_cloud src/crop_cloud.cpp)
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
@@ -149,6 +149,10 @@ add_executable(${PROJECT_NAME}_node src/pcl_test.cpp src/object_tracker.hpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_node
+   ${catkin_LIBRARIES}
+)
+
+target_link_libraries(crop_cloud
    ${catkin_LIBRARIES}
 )
 
